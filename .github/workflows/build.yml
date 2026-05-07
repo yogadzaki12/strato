@@ -2,7 +2,7 @@
 name: Build
 
 on:
-  push: 
+  workflow_dispatch:
     branches: [ master ]
 
 jobs:
@@ -46,3 +46,19 @@ jobs:
           CMAKE_CXX_COMPILER_LAUNCHER: "ccache"
           CCACHE_COMPILERCHECK: "string:${{ env.NDK_VERSION }}" # Use NDK version instead of compiler timestamp
         run: ./gradlew --no-daemon --stacktrace --build-cache --parallel --configure-on-demand assembleMainlineRelease
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strato-debug-apk
+          path: app/build/outputs/apk/mainline/release/
+          retention-days: 30
+
+      - name: Upload Build Logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-logs
+          path: app/build/reports/
+          retention-days: 30
